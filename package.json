@@ -1,0 +1,22 @@
+{
+  "name": "flutter-tdd-clean-app",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/PaoloProdossimoLopes/flutter-tdd-clean-app.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/PaoloProdossimoLopes/flutter-tdd-clean-app/issues"
+  },
+  "homepage": "https://github.com/PaoloProdossimoLopes/flutter-tdd-clean-app#readme",
+  "devDependencies": {
+    "git-commit-msg-linter": "^4.5.0"
+  }
+}
