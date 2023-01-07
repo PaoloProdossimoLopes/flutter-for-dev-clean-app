@@ -27,15 +27,21 @@ abstract class HTTPClient {
 }
 
 void main() {
+  
+  String url;
+  HTTPClientSpy client;
+  RemoteAuthentication sut;
+
+  setUp(() {
+    client = HTTPClientSpy();
+    url = faker.internet.httpUrl();
+    sut = RemoteAuthentication(client: client, url: url);
+  });
+
   test('should call http client with correct values (url and method)', () async {
-    final httpClient = HTTPClientSpy();
-    final url = faker.internet.httpUrl();
     const method = 'POST';
-    final sut = RemoteAuthentication(client: httpClient, url: url);
-
     await sut.auth();
-
-    verify(httpClient.request(url: url, method: method));
+    verify(client.request(url: url, method: method));
   });
 }
 
