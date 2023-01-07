@@ -30,7 +30,7 @@ void main() {
   test('should call http client with correct values (url and method)', () async {
     final httpClient = HTTPClientSpy();
     final url = faker.internet.httpUrl();
-    final method = 'POST';
+    const method = 'POST';
     final sut = RemoteAuthentication(client: httpClient, url: url);
 
     await sut.auth();
