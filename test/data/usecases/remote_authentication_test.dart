@@ -48,6 +48,20 @@ void main() {
 
     expect(future, throwsA(DomainError.unexpected));
   });
+
+  test('should throw unexpected error if HTTPClient returns 404 status code ', () {
+    when(
+      client.request(
+        url: anyNamed('url'), 
+        method: anyNamed('method'), 
+        body: anyNamed('body')
+      )
+    ).thenThrow(HTTPError.not_found);
+
+    final future = sut.auth(params);
+
+    expect(future, throwsA(DomainError.unexpected));
+  });
 }
 
 class HTTPClientSpy extends Mock implements HTTPClient { }
