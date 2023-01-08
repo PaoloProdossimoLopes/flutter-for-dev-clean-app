@@ -14,6 +14,17 @@ void main() {
   RemoteAuthentication sut;
   AuthParams params;
 
+  PostExpectation mock_request() => when(client.request(url: anyNamed('url'), method: anyNamed('method'), body: anyNamed('body')));
+  
+  mock_request_with_data(Map json) {
+    mock_request().thenAnswer((realInvocation) async => json);
+  }
+
+  mock_request_with_error(HTTPError error) {
+    mock_request().thenThrow(error);
+  }
+
+
   setUp(() {
     client = HTTPClientSpy();
     url = faker.internet.httpUrl();
@@ -22,29 +33,17 @@ void main() {
   });
 
   test('should call http client with correct values', () async {
-    when(client.request(url: anyNamed('url'), method: anyNamed('method'), body: anyNamed('body')))
-    .thenAnswer((_) async => { 'accessToken': faker.guid.guid() });
+    mock_request_with_data({ 'accessToken': faker.guid.guid() });
     const method = 'POST';
-    final body = {
-      'email': params. email,
-      'password': params.secret 
-    };
+    final body = { 'email': params. email, 'password': params.secret };
+
     await sut.auth(params);
-    verify(client.request(
-      url: url, 
-      method: method, 
-      body: body
-      ));
+    
+    verify(client.request(url: url, method: method, body: body));
   });
 
   test('should throws unexpected error if HTTPClient returns 400 status code', () {
-    when(
-      client.request(
-        url: anyNamed('url'), 
-        method: anyNamed('method'), 
-        body: anyNamed('body')
-      )
-    ).thenThrow(HTTPError.bad);
+    mock_request_with_error(HTTPError.bad);
 
     final future = sut.auth(params);
 
@@ -52,13 +51,7 @@ void main() {
   });
 
   test('should throw unexpected error if HTTPClient returns 404 status code ', () {
-    when(
-      client.request(
-        url: anyNamed('url'), 
-        method: anyNamed('method'), 
-        body: anyNamed('body')
-      )
-    ).thenThrow(HTTPError.not_found);
+    mock_request_with_error(HTTPError.not_found);
 
     final future = sut.auth(params);
 
@@ -66,8 +59,7 @@ void main() {
   });
 
   test('should throws an unexpected error when HTTPClient returns 500 status code', () {
-    when(client.request(url: anyNamed('url'), method: anyNamed('method'), body: anyNamed('body')))
-    .thenThrow(HTTPError.internal_server);
+    mock_request_with_error(HTTPError.internal_server);
 
     final future = sut.auth(params);
 
@@ -75,7 +67,7 @@ void main() {
   });
 
   test('auth method when client returns unauthorized error delievers invalid credentials domain erorr', () {
-    when(client.request(url: anyNamed('url'), method: anyNamed('method'), body: anyNamed('body'))).thenThrow(HTTPError.unauthorized);
+    mock_request_with_error(HTTPError.unauthorized);
 
     final future = sut.auth(params);
 
@@ -84,8 +76,7 @@ void main() {
 
   test('auth method when returns succeded data delievers account model with correct token', () async {
     final token = faker.guid.guid();
-    when(client.request(url: anyNamed('url'), method: anyNamed('method'), body: anyNamed('body')))
-    .thenAnswer((_) async => { 'accessToken': token });
+     mock_request_with_data({ 'accessToken': token });
 
     final account = await sut.auth(params);
 
@@ -93,12 +84,9 @@ void main() {
   });
 
   test('auth method on client respond with invalid json content should deliever unexpected error', () {
-    when(client.request(url: anyNamed('url'), method: anyNamed('method'), body: anyNamed('body')))
-      .thenAnswer((realInvocation) async => { 'invalid_key': 'invalid_value' });
-
-      final future = sut.auth(params);
-
-      expect(future, throwsA(DomainError.unexpected));
+    mock_request_with_data({ 'invalid_key': 'invalid_value' });
+    final future = sut.auth(params);
+    expect(future, throwsA(DomainError.unexpected));
   });
 }
 
