@@ -1,3 +1,4 @@
 enum HTTPError {
-  bad
+  bad,
+  not_found
 }
