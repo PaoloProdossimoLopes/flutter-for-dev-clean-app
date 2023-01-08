@@ -91,6 +91,15 @@ void main() {
 
     expect(account.token, token);
   });
+
+  test('auth method on client respond with invalid json content should deliever unexpected error', () {
+    when(client.request(url: anyNamed('url'), method: anyNamed('method'), body: anyNamed('body')))
+      .thenAnswer((realInvocation) async => { 'invalid_key': 'invalid_value' });
+
+      final future = sut.auth(params);
+
+      expect(future, throwsA(DomainError.unexpected));
+  });
 }
 
 class HTTPClientSpy extends Mock implements HTTPClient { }
