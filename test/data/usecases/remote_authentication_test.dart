@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:ForDev/data/http/http_client.dart';
 import 'package:ForDev/data/http/http_error.dart';
 import 'package:ForDev/data/usecases/remote_authentication.dart';
+import 'package:ForDev/domain/entities/account.dart';
 import 'package:ForDev/domain/helpers/domain_error.dart';
 import 'package:ForDev/domain/usecases/authentication.dart';
 import 'package:faker/faker.dart';
@@ -24,6 +25,8 @@ void main() {
   });
 
   test('should call http client with correct values', () async {
+    when(client.request(url: anyNamed('url'), method: anyNamed('method'), body: anyNamed('body')))
+    .thenAnswer((_) async => { 'accessToken': faker.guid.guid() });
     const method = 'POST';
     final body = {
       'email': params. email,
@@ -80,6 +83,16 @@ void main() {
     final future = sut.auth(params);
 
     expect(future, throwsA(DomainError.invalid_credentials));
+  });
+
+  test('auth method when returns succeded data delievers account model with correct token', () async {
+    final token = faker.guid.guid();
+    when(client.request(url: anyNamed('url'), method: anyNamed('method'), body: anyNamed('body')))
+    .thenAnswer((_) async => { 'accessToken': token });
+
+    final account = await sut.auth(params);
+
+    expect(account.token, token);
   });
 }
 
