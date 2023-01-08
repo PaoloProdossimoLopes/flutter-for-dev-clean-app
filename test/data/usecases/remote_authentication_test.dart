@@ -18,11 +18,7 @@ class RemoteAuthentication {
   });
   
   Future<void> auth(AuthParams params) async {
-    final body = {
-      'email': params.email,
-      'password': params.secret
-    };
-    await client.request(url: url, method: "POST", body: body);
+    await client.request(url: url, method: "POST", body: params.to_json());
   }
 }
 

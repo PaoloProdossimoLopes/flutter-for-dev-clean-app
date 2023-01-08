@@ -10,6 +10,11 @@ class AuthParams {
     @required this.email,
     @required this.secret
   });
+
+  Map to_json() => {
+    'email': email,
+    'password': secret
+  };
 }
 
 abstract class Authentication {
