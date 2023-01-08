@@ -1,4 +1,6 @@
 import 'package:ForDev/data/http/http_client.dart';
+import 'package:ForDev/data/http/http_error.dart';
+import 'package:ForDev/domain/helpers/domain_error.dart';
 import 'package:ForDev/domain/usecases/authentication.dart';
 import 'package:flutter/cupertino.dart';
 
@@ -13,7 +15,11 @@ class RemoteAuthentication {
   
   Future<void> auth(AuthParams params) async {
     final body = RemoteAuthParams.from_domain(params).to_json();
-    await client.request(url: url, method: "POST", body: body);
+    try {
+      await client.request(url: url, method: "POST", body: body);
+    } on HTTPError {
+      throw DomainError.unexpected;
+    }
   }
 }
 
