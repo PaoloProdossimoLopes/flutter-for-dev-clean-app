@@ -1,9 +1,6 @@
-import 'dart:math';
-
 import 'package:ForDev/data/http/http_client.dart';
 import 'package:ForDev/data/http/http_error.dart';
 import 'package:ForDev/data/usecases/remote_authentication.dart';
-import 'package:ForDev/domain/entities/account.dart';
 import 'package:ForDev/domain/helpers/domain_error.dart';
 import 'package:ForDev/domain/usecases/authentication.dart';
 import 'package:faker/faker.dart';
