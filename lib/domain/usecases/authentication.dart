@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 
 import '../entities/entities.dart';
 
-abstract class AuthParams {
+class AuthParams {
   final String email;
   final String secret;
 
