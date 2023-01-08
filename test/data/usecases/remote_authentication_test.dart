@@ -8,23 +8,25 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 
 void main() {
-  
+
+  // Properties
   String url;
   HTTPClientSpy client;
   RemoteAuthentication sut;
   AuthParams params;
 
-  PostExpectation mock_request() => when(client.request(url: anyNamed('url'), method: anyNamed('method'), body: anyNamed('body')));
+  // Helpers
+  PostExpectation _mock_request() => when(client.request(url: anyNamed('url'), method: anyNamed('method'), body: anyNamed('body')));
   
-  mock_request_with_data(Map json) {
-    mock_request().thenAnswer((realInvocation) async => json);
+  _mock_request_with_data(Map json) {
+    _mock_request().thenAnswer((realInvocation) async => json);
   }
 
-  mock_request_with_error(HTTPError error) {
-    mock_request().thenThrow(error);
+  _mock_request_with_error(HTTPError error) {
+    _mock_request().thenThrow(error);
   }
 
-
+  // Setup 
   setUp(() {
     client = HTTPClientSpy();
     url = faker.internet.httpUrl();
@@ -32,18 +34,19 @@ void main() {
     params =  AuthParams(email: faker.internet.email(), secret: faker.internet.password());
   });
 
+  // Tests
   test('should call http client with correct values', () async {
-    mock_request_with_data({ 'accessToken': faker.guid.guid() });
+    _mock_request_with_data({ 'accessToken': faker.guid.guid() });
     const method = 'POST';
     final body = { 'email': params. email, 'password': params.secret };
 
     await sut.auth(params);
-    
+
     verify(client.request(url: url, method: method, body: body));
   });
 
   test('should throws unexpected error if HTTPClient returns 400 status code', () {
-    mock_request_with_error(HTTPError.bad);
+    _mock_request_with_error(HTTPError.bad);
 
     final future = sut.auth(params);
 
@@ -51,7 +54,7 @@ void main() {
   });
 
   test('should throw unexpected error if HTTPClient returns 404 status code ', () {
-    mock_request_with_error(HTTPError.not_found);
+    _mock_request_with_error(HTTPError.not_found);
 
     final future = sut.auth(params);
 
@@ -59,7 +62,7 @@ void main() {
   });
 
   test('should throws an unexpected error when HTTPClient returns 500 status code', () {
-    mock_request_with_error(HTTPError.internal_server);
+    _mock_request_with_error(HTTPError.internal_server);
 
     final future = sut.auth(params);
 
@@ -67,7 +70,7 @@ void main() {
   });
 
   test('auth method when client returns unauthorized error delievers invalid credentials domain erorr', () {
-    mock_request_with_error(HTTPError.unauthorized);
+    _mock_request_with_error(HTTPError.unauthorized);
 
     final future = sut.auth(params);
 
@@ -76,7 +79,7 @@ void main() {
 
   test('auth method when returns succeded data delievers account model with correct token', () async {
     final token = faker.guid.guid();
-     mock_request_with_data({ 'accessToken': token });
+     _mock_request_with_data({ 'accessToken': token });
 
     final account = await sut.auth(params);
 
@@ -84,10 +87,10 @@ void main() {
   });
 
   test('auth method on client respond with invalid json content should deliever unexpected error', () {
-    mock_request_with_data({ 'invalid_key': 'invalid_value' });
+    _mock_request_with_data({ 'invalid_key': 'invalid_value' });
     final future = sut.auth(params);
     expect(future, throwsA(DomainError.unexpected));
   });
 }
 
-class HTTPClientSpy extends Mock implements HTTPClient { }
+class HTTPClientSpy extends Mock implements HTTPClient { /*Intentional*/ }
