@@ -73,6 +73,14 @@ void main() {
 
     expect(future, throwsA(DomainError.unexpected));
   });
+
+  test('auth method when client returns unauthorized error delievers invalid credentials domain erorr', () {
+    when(client.request(url: anyNamed('url'), method: anyNamed('method'), body: anyNamed('body'))).thenThrow(HTTPError.unauthorized);
+
+    final future = sut.auth(params);
+
+    expect(future, throwsA(DomainError.invalid_credentials));
+  });
 }
 
 class HTTPClientSpy extends Mock implements HTTPClient { }
