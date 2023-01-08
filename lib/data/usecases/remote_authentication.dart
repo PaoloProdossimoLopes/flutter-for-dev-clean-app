@@ -1,5 +1,6 @@
 import 'package:ForDev/data/http/http_client.dart';
 import 'package:ForDev/data/http/http_error.dart';
+import 'package:ForDev/domain/entities/account.dart';
 import 'package:ForDev/domain/helpers/domain_error.dart';
 import 'package:ForDev/domain/usecases/authentication.dart';
 import 'package:flutter/cupertino.dart';
@@ -13,10 +14,11 @@ class RemoteAuthentication {
     @required this.url
   });
   
-  Future<void> auth(AuthParams params) async {
+  Future<Account> auth(AuthParams params) async {
     final body = RemoteAuthParams.from_domain(params).to_json();
     try {
-      await client.request(url: url, method: "POST", body: body);
+      final response = await client.request(url: url, method: "POST", body: body);
+      return Account.from_json(response);
     } on HTTPError catch(error) {
       final failure = (error == HTTPError.unauthorized) 
         ? DomainError.invalid_credentials 
