@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:ForDev/data/http/http_client.dart';
 import 'package:ForDev/data/http/http_error.dart';
 import 'package:ForDev/data/usecases/remote_authentication.dart';
@@ -57,6 +59,15 @@ void main() {
         body: anyNamed('body')
       )
     ).thenThrow(HTTPError.not_found);
+
+    final future = sut.auth(params);
+
+    expect(future, throwsA(DomainError.unexpected));
+  });
+
+  test('should throws an unexpected error when HTTPClient returns 500 status code', () {
+    when(client.request(url: anyNamed('url'), method: anyNamed('method'), body: anyNamed('body')))
+    .thenThrow(HTTPError.internal_server);
 
     final future = sut.auth(params);
 
