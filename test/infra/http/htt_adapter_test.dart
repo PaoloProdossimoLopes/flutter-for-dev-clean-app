@@ -40,10 +40,14 @@ void main() {
     url = faker.internet.httpUrl();
   });
 
+  mock_post_with_data() {
+    when(client.post(url, headers: anyNamed('headers'), body: anyNamed('body')))
+          .thenAnswer((_) async => Response('{"any_key":"any_value"}', 200));
+  }
+
   group('POST', () {
     test('should call post with correct values', () async {
-      when(client.post(url, headers: anyNamed('headers')))
-      .thenAnswer((_) async => Response('{"any_key":"any_value"}', 200));
+      mock_post_with_data();
       
       sut.request(url: url, method: "POST");
 
@@ -54,8 +58,7 @@ void main() {
     });
 
     test('should call post with no body', () async {
-      when(client.post(url, headers: anyNamed('headers')))
-      .thenAnswer((_) async => Response('{"any_key":"any_value"}', 200));
+      mock_post_with_data();
       
       sut.request(url: url, method: "POST");
 
@@ -66,8 +69,7 @@ void main() {
     });
 
     test('should call post with body', () async {
-      when(client.post(url, headers: anyNamed('headers'), body: anyNamed('body')))
-      .thenAnswer((_) async => Response('{"any_key":"any_value"}', 200));
+      mock_post_with_data();
 
       sut.request(url: url, method: "POST", body: { "any_key": "any_value" });
 
@@ -78,8 +80,7 @@ void main() {
     });
 
     test('request return data if post returns 200', () async {
-      when(client.post(url, headers: anyNamed('headers')))
-      .thenAnswer((_) async => Response('{"any_key":"any_value"}', 200));
+      mock_post_with_data();
       
       final response = await sut.request(url: url, method: 'POST');
 
