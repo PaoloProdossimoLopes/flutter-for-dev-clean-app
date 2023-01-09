@@ -26,7 +26,7 @@ class HTTPAdapter {
     final bodyIfNedded = body != null ? jsonEncode(body) : null;
     final response = await client.post(url, headers: headers, body: bodyIfNedded);
 
-    if (response.body.isEmpty) {
+    if (response.statusCode == 204 || response.body.isEmpty) {
       return null;
     }
 
@@ -45,14 +45,14 @@ void main() {
     url = faker.internet.httpUrl();
   });
 
-  mock_post_with_data(String response) {
+  mock_post_with_data(int statusCode, String response) {
     when(client.post(url, headers: anyNamed('headers'), body: anyNamed('body')))
-          .thenAnswer((_) async => Response(response, 200));
+          .thenAnswer((_) async => Response(response, statusCode));
   }
 
   group('POST', () {
     test('should call post with correct values', () async {
-      mock_post_with_data('{"any_key":"any_value"}');
+      mock_post_with_data(200, '{"any_key":"any_value"}');
       
       sut.request(url: url, method: "POST");
 
@@ -63,7 +63,7 @@ void main() {
     });
 
     test('should call post with no body', () async {
-      mock_post_with_data('{"any_key":"any_value"}');
+      mock_post_with_data(200, '{"any_key":"any_value"}');
       
       sut.request(url: url, method: "POST");
 
@@ -74,7 +74,7 @@ void main() {
     });
 
     test('should call post with body', () async {
-      mock_post_with_data('{"any_key":"any_value"}');
+      mock_post_with_data(200, '{"any_key":"any_value"}');
 
       sut.request(url: url, method: "POST", body: { "any_key": "any_value" });
 
@@ -85,15 +85,23 @@ void main() {
     });
 
     test('request return data if post returns 200', () async {
-      mock_post_with_data('{"any_key":"any_value"}');
+      mock_post_with_data(200, '{"any_key":"any_value"}');
       
       final response = await sut.request(url: url, method: 'POST');
 
       expect(response, { "any_key": "any_value" });
     });
 
-    test('request with 200 status coode but with no data deleivers no body to decode', () async {
-      mock_post_with_data('');
+    test('request deleivers no resposne with 204 with no datas', () async {
+      mock_post_with_data(204, '');
+      
+      final response = await sut.request(url: url, method: 'POST');
+
+      expect(response, null);
+    });
+
+    test('request deleivers no resposnes with status code with 204 with data', () async {
+      mock_post_with_data(204, '{"any_key":"any_value"}');
       
       final response = await sut.request(url: url, method: 'POST');
 
