@@ -15,7 +15,10 @@ class HTTPAdapter {
     String url,
     String method
   }) async {
-    client.post(url);
+    client.post(url,  headers: {
+        'content-type': 'application/json',
+        'accept': 'application/json'
+        });
   }
 }
 
@@ -25,8 +28,13 @@ void main() {
       final url = faker.internet.httpUrl();
       final client = ClientSpy();
       final sut = HTTPAdapter(client);
+
       sut.request(url: url, method: "POST");
-      verify(client.post(url));
+
+      verify(client.post(url, headers: {
+        'content-type': 'application/json',
+        'accept': 'application/json'
+        }));
     });
   });
 }
