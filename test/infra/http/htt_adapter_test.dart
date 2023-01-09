@@ -25,6 +25,11 @@ class HTTPAdapter {
     };
     final bodyIfNedded = body != null ? jsonEncode(body) : null;
     final response = await client.post(url, headers: headers, body: bodyIfNedded);
+
+    if (response.body.isEmpty) {
+      return null;
+    }
+
     return jsonDecode(response.body);
   } 
 }
@@ -40,14 +45,14 @@ void main() {
     url = faker.internet.httpUrl();
   });
 
-  mock_post_with_data() {
+  mock_post_with_data(String response) {
     when(client.post(url, headers: anyNamed('headers'), body: anyNamed('body')))
-          .thenAnswer((_) async => Response('{"any_key":"any_value"}', 200));
+          .thenAnswer((_) async => Response(response, 200));
   }
 
   group('POST', () {
     test('should call post with correct values', () async {
-      mock_post_with_data();
+      mock_post_with_data('{"any_key":"any_value"}');
       
       sut.request(url: url, method: "POST");
 
@@ -58,7 +63,7 @@ void main() {
     });
 
     test('should call post with no body', () async {
-      mock_post_with_data();
+      mock_post_with_data('{"any_key":"any_value"}');
       
       sut.request(url: url, method: "POST");
 
@@ -69,7 +74,7 @@ void main() {
     });
 
     test('should call post with body', () async {
-      mock_post_with_data();
+      mock_post_with_data('{"any_key":"any_value"}');
 
       sut.request(url: url, method: "POST", body: { "any_key": "any_value" });
 
@@ -80,11 +85,19 @@ void main() {
     });
 
     test('request return data if post returns 200', () async {
-      mock_post_with_data();
+      mock_post_with_data('{"any_key":"any_value"}');
       
       final response = await sut.request(url: url, method: 'POST');
 
       expect(response, { "any_key": "any_value" });
+    });
+
+    test('request with 200 status coode but with no data deleivers no body to decode', () async {
+      mock_post_with_data('');
+      
+      final response = await sut.request(url: url, method: 'POST');
+
+      expect(response, null);
     });
   });
 }
