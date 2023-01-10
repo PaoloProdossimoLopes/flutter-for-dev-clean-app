@@ -1,38 +1,10 @@
-import 'dart:convert';
-
+import 'package:ForDev/infra/http/http_adapter.dart';
 import 'package:faker/faker.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart';
 import 'package:mockito/mockito.dart';
 
-class ClientSpy extends Mock implements Client { }
-
-class HTTPAdapter {
-
-  final Client client;
-
-  HTTPAdapter(this.client);
-
-  Future<Map> request({
-    @required String url,
-    @required String method,
-    Map body
-  }) async {
-    const headers =  {
-      'content-type': 'application/json',
-      'accept': 'application/json'
-    };
-    final bodyIfNedded = body != null ? jsonEncode(body) : null;
-    final response = await client.post(url, headers: headers, body: bodyIfNedded);
-
-    if (response.statusCode == 204 || response.body.isEmpty) {
-      return null;
-    }
-
-    return jsonDecode(response.body);
-  } 
-}
+class ClientSpy extends Mock implements Client {}
 
 void main() {
   ClientSpy client;
@@ -47,62 +19,67 @@ void main() {
 
   mock_post_with_data(int statusCode, String response) {
     when(client.post(url, headers: anyNamed('headers'), body: anyNamed('body')))
-          .thenAnswer((_) async => Response(response, statusCode));
+        .thenAnswer((_) async => Response(response, statusCode));
   }
 
   group('POST', () {
     test('should call post with correct values', () async {
       mock_post_with_data(200, '{"any_key":"any_value"}');
-      
+
       sut.request(url: url, method: "POST");
 
       verify(client.post(url, headers: {
         'content-type': 'application/json',
         'accept': 'application/json'
-        }));
+      }));
     });
 
     test('should call post with no body', () async {
       mock_post_with_data(200, '{"any_key":"any_value"}');
-      
+
       sut.request(url: url, method: "POST");
 
-      verify(client.post(url, headers: {
-        'content-type': 'application/json',
-        'accept': 'application/json'
-        }, body: null));
+      verify(client.post(url,
+          headers: {
+            'content-type': 'application/json',
+            'accept': 'application/json'
+          },
+          body: null));
     });
 
     test('should call post with body', () async {
       mock_post_with_data(200, '{"any_key":"any_value"}');
 
-      sut.request(url: url, method: "POST", body: { "any_key": "any_value" });
+      sut.request(url: url, method: "POST", body: {"any_key": "any_value"});
 
-      verify(client.post(url, headers: {
-        'content-type': 'application/json',
-        'accept': 'application/json'
-      }, body: '{"any_key":"any_value"}'));
+      verify(client.post(url,
+          headers: {
+            'content-type': 'application/json',
+            'accept': 'application/json'
+          },
+          body: '{"any_key":"any_value"}'));
     });
 
     test('request return data if post returns 200', () async {
       mock_post_with_data(200, '{"any_key":"any_value"}');
-      
+
       final response = await sut.request(url: url, method: 'POST');
 
-      expect(response, { "any_key": "any_value" });
+      expect(response, {"any_key": "any_value"});
     });
 
     test('request deleivers no resposne with 204 with no datas', () async {
       mock_post_with_data(204, '');
-      
+
       final response = await sut.request(url: url, method: 'POST');
 
       expect(response, null);
     });
 
-    test('request deleivers no resposnes with status code with 204 with data', () async {
+    test('request deleivers no resposnes with status code with 204 with data',
+        () async {
       mock_post_with_data(204, '{"any_key":"any_value"}');
-      
+
       final response = await sut.request(url: url, method: 'POST');
 
       expect(response, null);

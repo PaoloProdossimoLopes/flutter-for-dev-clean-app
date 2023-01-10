@@ -12,3 +12,8 @@ Flutter: 1.20.4
 - Download FVM into your machine
 - Install flutter version 1.20.4 using command `fvm install 1.20.4`
 - Apply version of flutter SDK using command `fvm use 1.20.4` 
+
+1. run this command to install dependencies
+```sh
+fvm flutter pub get
+```
