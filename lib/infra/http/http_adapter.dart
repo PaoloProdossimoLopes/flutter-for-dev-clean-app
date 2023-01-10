@@ -18,6 +18,10 @@ class HTTPAdapter {
     final response =
         await client.post(url, headers: headers, body: bodyIfNedded);
 
+    return _handle_response(response);
+  }
+
+  Map _handle_response(Response response) {
     if (response.statusCode == 204 || response.body.isEmpty) {
       return null;
     }
