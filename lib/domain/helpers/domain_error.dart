@@ -1,4 +1,1 @@
-enum DomainError {
-  unexpected,
-  invalid_credentials
-}
+enum DomainError { unexpected, invalid_credentials, bad_request }
