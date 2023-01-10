@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:ForDev/data/http/http_error.dart';
 import 'package:ForDev/domain/helpers/domain_error.dart';
+import 'package:ForDev/infra/http/status_code.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart';
 
@@ -31,20 +32,23 @@ class HTTPAdapter {
   }
 
   Map _handle_response(Response response) {
-    if (response.statusCode == 204) {
-      return null;
-    } else if (response.statusCode == 400) {
-        throw HTTPError.bad;
-    } else if (response.statusCode == 401) {
-        throw HTTPError.unauthorized;
-    } else if (response.statusCode == 403) {
-        throw HTTPError.forbiden;
-    } else if (response.statusCode == 404) {
-        throw HTTPError.not_found;
-    } else if (response.statusCode == 500) {
-        throw HTTPError.internal_server;
-    }
+    final status = StatusCodeHelper.statusCode(response.statusCode);
 
-    return jsonDecode(response.body);
+    switch (status) {
+        case StatusCode.ok: 
+            return jsonDecode(response.body);
+        case StatusCode.noContentError:
+            return null;
+        case StatusCode.badRequestError:
+            throw HTTPError.bad;
+        case StatusCode.unauthorizedError:
+            throw HTTPError.unauthorized;
+        case StatusCode.forbidenError:
+            throw HTTPError.forbiden;
+        case StatusCode.notFoundError:
+            throw HTTPError.not_found;
+        default:
+            throw HTTPError.internal_server;
+    }
   }
 }
