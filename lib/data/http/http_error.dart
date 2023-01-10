@@ -3,5 +3,6 @@ enum HTTPError {
   not_found,
   internal_server,
   unauthorized,
-  invalid_data
+  invalid_data,
+  forbiden
 }

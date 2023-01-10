@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:ForDev/data/http/http_error.dart';
 import 'package:ForDev/domain/helpers/domain_error.dart';
 import 'package:ForDev/infra/http/http_adapter.dart';
 import 'package:faker/faker.dart';
@@ -91,13 +92,64 @@ void main() {
     test('request returns `BadRequest` error if client delievers 400 statusCode with body', () async {
       mock_post_with(400, '{"any_key":"any_value"}');
       final failure = sut.request(url: url, method: 'POST');
-      expect(failure, throwsA(DomainError.bad_request));
+      expect(failure, throwsA(HTTPError.bad));
     });
 
     test('request returns `BadRequest` error if client delievers 400 statusCode withut body', () async {
       mock_post_with(400, '');
       final failure = sut.request(url: url, method: 'POST');
-      expect(failure, throwsA(DomainError.bad_request));
+      expect(failure, throwsA(HTTPError.bad));
+    });
+
+    test('request returns `unauthorized` error if client delievers 401 statusCode with body', () async {
+      mock_post_with(401, '{"any_key":"any_value"}');
+      final failure = sut.request(url: url, method: 'POST');
+      expect(failure, throwsA(HTTPError.unauthorized));
+    });
+
+    test('request returns `unauthorized` error if client delievers 401 statusCode withut body', () async {
+      mock_post_with(401, '');
+      final failure = sut.request(url: url, method: 'POST');
+      expect(failure, throwsA(HTTPError.unauthorized));
+    });
+
+    test('request returns `Forbiden` error if client delievers 403 statusCode with body', () async {
+      mock_post_with(403, '{"any_key":"any_value"}');
+      final failure = sut.request(url: url, method: 'POST');
+      expect(failure, throwsA(HTTPError.forbiden));
+    });
+
+    test('request returns `Forbiden` error if client delievers 403 statusCode withut body', () async {
+      mock_post_with(403, '');
+      final failure = sut.request(url: url, method: 'POST');
+      expect(failure, throwsA(HTTPError.forbiden));
+    });
+
+
+    test('request returns `NotFound` error if client delievers 404 statusCode with body', () async {
+      mock_post_with(404, '{"any_key":"any_value"}');
+      final failure = sut.request(url: url, method: 'POST');
+      expect(failure, throwsA(HTTPError.not_found));
+    });
+
+    test('request returns `NotFound` error if client delievers 404 statusCode withut body', () async {
+      mock_post_with(404, '');
+      final failure = sut.request(url: url, method: 'POST');
+      expect(failure, throwsA(HTTPError.not_found));
+    });
+
+
+
+     test('request returns `InternalServer` error if client delievers 500 statusCode with body', () async {
+      mock_post_with(500, '{"any_key":"any_value"}');
+      final failure = sut.request(url: url, method: 'POST');
+      expect(failure, throwsA(HTTPError.internal_server));
+    });
+
+    test('request returns `InternalServer` error if client delievers 500 statusCode withut body', () async {
+      mock_post_with(500, '');
+      final failure = sut.request(url: url, method: 'POST');
+      expect(failure, throwsA(HTTPError.internal_server));
     });
   });
 }
