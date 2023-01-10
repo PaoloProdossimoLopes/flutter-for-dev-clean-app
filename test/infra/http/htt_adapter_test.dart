@@ -21,10 +21,26 @@ void main() {
     url = faker.internet.httpUrl();
   });
 
+  PostExpectation post_mocked() {
+    return when(client.post(url, headers: anyNamed('headers'), body: anyNamed('body')));
+  }
+
   mock_post_with(int statusCode, String response) {
-    when(client.post(url, headers: anyNamed('headers'), body: anyNamed('body')))
+    post_mocked()
         .thenAnswer((_) async => Response(response, statusCode));
   }
+
+  mock_error() {
+    post_mocked()
+        .thenThrow(Exception());
+  }
+
+  group('Shared', () {
+    test('should thow server error if invalid method is provided', () {
+      final failure = sut.request(url: url, method: 'ivnalid-method');
+      expect(failure, throwsA(HTTPError.internal_server));
+    });
+  }); 
 
   group('POST', () {
     test('should call post with correct values', () async {
@@ -125,7 +141,6 @@ void main() {
       expect(failure, throwsA(HTTPError.forbiden));
     });
 
-
     test('request returns `NotFound` error if client delievers 404 statusCode with body', () async {
       mock_post_with(404, '{"any_key":"any_value"}');
       final failure = sut.request(url: url, method: 'POST');
@@ -138,8 +153,6 @@ void main() {
       expect(failure, throwsA(HTTPError.not_found));
     });
 
-
-
      test('request returns `InternalServer` error if client delievers 500 statusCode with body', () async {
       mock_post_with(500, '{"any_key":"any_value"}');
       final failure = sut.request(url: url, method: 'POST');
@@ -148,6 +161,12 @@ void main() {
 
     test('request returns `InternalServer` error if client delievers 500 statusCode withut body', () async {
       mock_post_with(500, '');
+      final failure = sut.request(url: url, method: 'POST');
+      expect(failure, throwsA(HTTPError.internal_server));
+    });
+
+    test('request returns `InternalServerError` on client deleivers any exception', () {
+      mock_error();
       final failure = sut.request(url: url, method: 'POST');
       expect(failure, throwsA(HTTPError.internal_server));
     });

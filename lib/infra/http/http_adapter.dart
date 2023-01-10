@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:ForDev/data/http/http_error.dart';
+import 'package:ForDev/domain/helpers/domain_error.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart';
 
@@ -17,9 +18,16 @@ class HTTPAdapter {
     };
 
     final bodyIfNedded = body != null ? jsonEncode(body) : null;
-    final response = await client.post(url, headers: headers, body: bodyIfNedded);
-
-    return _handle_response(response);
+    if (method == 'POST') {
+        try {
+            final response = await client.post(url, headers: headers, body: bodyIfNedded);
+            return _handle_response(response);
+        } on Exception {
+            throw HTTPError.internal_server;
+        }
+    } else {
+        throw HTTPError.internal_server;
+    }
   }
 
   Map _handle_response(Response response) {
