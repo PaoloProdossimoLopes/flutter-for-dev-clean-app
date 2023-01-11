@@ -1,11 +1,10 @@
 import 'package:ForDev/data/http/http_error.dart';
 import 'package:ForDev/domain/entities/account.dart';
-import 'package:flutter/cupertino.dart';
 
 class RemoteAccount {
   final String accessToken;
 
-  RemoteAccount(@required this.accessToken);
+  RemoteAccount(this.accessToken);
 
   factory RemoteAccount.from_json(Map json) {
     const token_key = 'accessToken';

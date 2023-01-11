@@ -34,8 +34,8 @@ class RemoteAuthParams {
   final String passwod;
 
   RemoteAuthParams(
-    @required this.email,
-    @required this.passwod
+    this.email,
+    this.passwod
   );
 
   factory RemoteAuthParams.from_domain(AuthParams params) {

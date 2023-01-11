@@ -1,7 +1,5 @@
-import 'dart:convert';
 
 import 'package:ForDev/data/http/http_error.dart';
-import 'package:ForDev/domain/helpers/domain_error.dart';
 import 'package:ForDev/infra/http/http_adapter.dart';
 import 'package:faker/faker.dart';
 import 'package:flutter_test/flutter_test.dart';

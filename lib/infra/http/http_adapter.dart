@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:ForDev/data/http/http_error.dart';
-import 'package:ForDev/domain/helpers/domain_error.dart';
 import 'package:ForDev/infra/http/status_code.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart';
