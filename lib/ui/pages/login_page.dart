@@ -13,8 +13,8 @@ class LoginPage extends StatelessWidget {
           Container(margin: EdgeInsets.only(left: 16, right: 16), child: Form(child: Column(children: [
             Field(placeholder: 'Email', icon: Icon(Icons.email), keyboard: TextInputType.emailAddress),
             Field(placeholder: 'Password', icon: Icon(Icons.lock), keyboard: TextInputType.text),
-            Container(margin: EdgeInsets.only(top: 20), child: MaterialButton(onPressed: () { print('tapped'); }, child: Text('Entrar'.toUpperCase()), color: Colors.grey)),
-            TextButton.icon(onPressed: () { print('tapped'); }, icon: Icon(Icons.person, color: Theme.of(context).primaryColor,), label: Text('Criar conta'), )
+            Container(margin: EdgeInsets.only(top: 20), child: MaterialButton(onPressed: null, child: Text('Entrar'.toUpperCase()), color: Colors.grey)),
+            TextButton.icon(onPressed: () {}, icon: Icon(Icons.person, color: Theme.of(context).primaryColor,), label: Text('Criar conta'), )
           ])))
         ]))
     );
